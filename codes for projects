@@ -1,0 +1,778 @@
+#include <JuceHeader.h>
+
+// Animated Background Component
+class AnimatedBackground : public juce::Component, private juce::Timer
+{
+public:
+    AnimatedBackground() { startTimerHz(60); } // 60 FPS animation
+
+    void paint(juce::Graphics& g) override
+    {
+        g.fillAll(juce::Colour::fromRGB(10, 10, 30)); // Dark cosmic background
+
+        for (const auto& track : werewolfTracks)
+        {
+            g.setColour(track.color);
+            g.drawEllipse(track.x, track.y, 10.0f, 10.0f, 3.0f);
+        }
+
+        g.setFont(juce::Font(16.0f, juce::Font::bold));
+        g.setColour(juce::Colours::white);
+        g.drawText("Cosmic Divine Love: Frik and Frak", getLocalBounds(), juce::Justification::centredTop);
+    }
+
+    void updateTracks(float intensity)
+    {
+        werewolfTracks.push_back({ juce::Random::getSystemRandom().nextFloat() * getWidth(),
+                                   juce::Random::getSystemRandom().nextFloat() * getHeight(),
+                                   juce::Colour::fromHSV(intensity, 0.8f, 1.0f, 1.0f) });
+
+        if (werewolfTracks.size() > 100)
+            werewolfTracks.pop_front();
+    }
+
+private:
+    struct Track
+    {
+        float x, y;
+        juce::Colour color;
+    };
+
+    std::deque<Track> werewolfTracks;
+
+    void timerCallback() override
+    {
+        repaint();
+    }
+};
+
+// Main Synthesizer Component
+class ProtoOnSynth : public juce::AudioAppComponent, public juce::Slider::Listener
+{
+public:
+    ProtoOnSynth()
+    {
+        // GUI Setup
+        addAndMakeVisible(background);
+        addAndMakeVisible(freqKnob);
+        addAndMakeVisible(attackKnob);
+
+        freqKnob.setSliderStyle(juce::Slider::Rotary);
+        freqKnob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+        freqKnob.setRange(20.0, 2000.0, 1.0);
+        freqKnob.setValue(440.0);
+        freqKnob.setTextValueSuffix(" Hz");
+        freqKnob.addListener(this);
+
+        attackKnob.setSliderStyle(juce::Slider::Rotary);
+        attackKnob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+        attackKnob.setRange(0.0, 5.0, 0.1);
+        attackKnob.setValue(0.1);
+        attackKnob.setTextValueSuffix(" s");
+        attackKnob.addListener(this);
+
+        setAudioChannels(0, 2); // Stereo output
+        setSize(800, 600);
+    }
+
+    ~ProtoOnSynth() override { shutdownAudio(); }
+
+    void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override
+    {
+        synth.setCurrentPlaybackSampleRate(sampleRate);
+        for (auto* voice : synth.getVoices())
+            if (auto* synthVoice = dynamic_cast<SynthVoice*>(voice))
+                synthVoice->prepareToPlay(sampleRate, samplesPerBlockExpected);
+    }
+
+    void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override
+    {
+        bufferToFill.clearActiveBufferRegion();
+        synth.renderNextBlock(*bufferToFill.buffer, juce::MidiBuffer(), 0, bufferToFill.numSamples);
+
+        float intensity = juce::Random::getSystemRandom().nextFloat();
+        background.updateTracks(intensity); // Update animation
+    }
+
+    void releaseResources() override {}
+
+    void paint(juce::Graphics& g) override {}
+
+    void resized() override
+    {
+        background.setBounds(getLocalBounds());
+        freqKnob.setBounds(100, 400, 100, 100);
+        attackKnob.setBounds(250, 400, 100, 100);
+    }
+
+    void sliderValueChanged(juce::Slider* slider) override
+    {
+        if (slider == &freqKnob)
+        {
+            for (auto* voice : synth.getVoices())
+                if (auto* synthVoice = dynamic_cast<SynthVoice*>(voice))
+                    synthVoice->setFrequency(freqKnob.getValue());
+        }
+    }
+
+private:
+    juce::Synthesiser synth;
+    juce::Slider freqKnob, attackKnob;
+    AnimatedBackground background;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ProtoOnSynth)
+};
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wraith Air Drums and Diver Synth Apps</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* AI Assistant Styles */
+        .ai-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4F46E5;
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .ai-chat {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            background: white;
+            width: 350px;
+            max-height: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transform: scale(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+        .ai-chat.open {
+            transform: scale(1);
+        }
+
+        .ai-chat-header {
+            background-color: #4F46E5;
+            color: white;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .ai-chat-body {
+            padding: 10px;
+            overflow-y: auto;
+            max-height: 300px;
+            font-size: 14px;
+        }
+
+        .ai-chat-footer {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        .ai-chat-footer input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .ai-chat-footer button {
+            background-color: #4F46E5;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .ai-chat-footer button:hover {
+            background-color: #3B3AAE;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto p-6">
+        <!-- Existing Content -->
+        <h1 class="text-4xl font-bold mb-4">Wraith Air Drums</h1>
+        <p class="italic mb-6">By LuminousGloomofSilence and Eric Heinricy</p>
+        <p class="mb-6 text-lg">Unleash your creativity with our 8 voice polyphonic drum synthesizer app, designed for musicians on the go!</p>
+
+        <!-- Wiki Section -->
+        <section class="mt-12">
+            <h2 class="text-3xl font-semibold mb-4">Wiki: Divine Gloom of Silence</h2>
+            <p class="mb-4">Welcome to the official wiki for Divine Gloom of Silence! Here you’ll find detailed information about our apps, features, and guides.</p>
+
+            <div class="bg-gray-200 p-4 rounded shadow">
+                <h3 class="text-xl font-bold">Table of Contents</h3>
+                <ul class="list-disc list-inside">
+                    <li><a href="#features" class="text-blue-500 hover:underline">Features Overview</a></li>
+                    <li><a href="#faqs" class="text-blue-500 hover:underline">FAQs</a></li>
+                    <li><a href="#tutorials" class="text-blue-500 hover:underline">Tutorials</a></li>
+                </ul>
+            </div>
+
+            <!-- Example Wiki Content -->
+            <article id="features" class="mt-8">
+                <h3 class="text-2xl font-semibold">Features Overview</h3>
+                <p class="mt-2">Explore the unique features of our synthesizers, including polyphony, granular synthesis, and wavetable customization.</p>
+            </article>
+
+            <article id="faqs" class="mt-8">
+                <h3 class="text-2xl font-semibold">FAQs</h3>
+                <p class="mt-2">Have questions? Check out our <a href="#" class="text-blue-500 hover:underline">FAQs</a> for answers about installation, usage, and payments.</p>
+            </article>
+
+            <article id="tutorials" class="mt-8">
+                <h3 class="text-2xl font-semibold">Tutorials</h3>
+                <p class="mt-2">Learn how to use each of our apps with step-by-step <a href="#" class="text-blue-500 hover:underline">tutorials</a>.</p>
+            </article>
+        </section>
+
+        <!-- Contact Section -->
+        <footer class="mt-12 bg-gray-800 text-white p-6 rounded">
+            <h3 class="text-xl font-semibold">Contact Us</h3>
+            <p class="mt-2">Follow us on <a href="https://twitter.com/yourhandle" target="_blank" class="text-blue-400 hover:underline">X (Twitter)</a> or reach out via email: <a href="mailto:yourgmail@gmail.com" class="text-blue-400 hover:underline">yourgmail@gmail.com</a>.</p>
+        </footer>
+    </div>
+
+    <!-- AI Assistant -->
+    <div class="ai-button" id="aiButton" title="Ask me anything!">
+        <span>AI</span>
+    </div>
+
+    <div class="ai-chat" id="aiChat">
+        <div class="ai-chat-header">Need Help?</div>
+        <div class="ai-chat-body" id="aiChatBody">
+            <p>Hello! How can I assist you today?</p>
+        </div>
+        <div class="ai-chat-footer">
+            <input type="text" id="aiInput" placeholder="Type your question here...">
+            <button id="aiSend">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const aiButton = document.getElementById('aiButton');
+        const aiChat = document.getElementById('aiChat');
+        const aiInput = document.getElementById('aiInput');
+        const aiChatBody = document.getElementById('aiChatBody');
+
+        aiButton.addEventListener('click', () => {
+            aiChat.classList.toggle('open');
+        });
+
+        document.getElementById('aiSend').addEventListener('click', async () => {
+            const userMessage = aiInput.value.trim();
+            if (userMessage) {
+                const userMessageElem = document.createElement('p');
+                userMessageElem.textContent = `You: ${userMessage}`;
+                userMessageElem.style.color = '#000';
+                aiChatBody.appendChild(userMessageElem);
+
+                const loadingMessageElem = document.createElement('p');
+                loadingMessageElem.textContent = "AI: Thinking...";
+                loadingMessageElem.style.color = '#555';
+                aiChatBody.appendChild(loadingMessageElem);
+
+                aiChatBody.scrollTop = aiChatBody.scrollHeight;
+
+                // Simulate AI Response
+                setTimeout(() => {
+                    loadingMessageElem.textContent = `AI: Here's what I think about "${userMessage}": It's a fascinating query! Let me guide you through it.`;
+                    aiChatBody.scrollTop = aiChatBody.scrollHeight;
+                }, 1500);
+
+                aiInput.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const { Configuration, OpenAIApi } = require('openai');
+require('dotenv').config();
+
+const app = express();
+app.use(bodyParser.json());
+
+// MongoDB connection
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log("MongoDB connected"))
+    .catch(err => console.error("MongoDB connection error:", err));
+
+// Composition Schema
+const compositionSchema = new mongoose.Schema({
+    content: { type: String, required: true },
+}, { timestamps: true });
+
+const Composition = mongoose.model('Composition', compositionSchema);
+
+// OpenAI configuration
+const openai = new OpenAIApi(new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
+}));
+
+// Save composition endpoint
+app.post('/api/save-composition', async (req, res) => {
+    const { composition } = req.body;
+    try {
+        const newComposition = new Composition({ content: composition });
+        await newComposition.save();
+        res.json({ message: 'Composition saved successfully!' });
+    } catch (error) {
+        console.error("Error saving composition:", error);
+        res.status(500).json({ message: 'Failed to save composition.' });
+    }
+});
+
+// Ask AI endpoint
+app.post('/api/ask-ai', async (req, res) => {
+    const { query } = req.body;
+    try {
+        const response = await openai.createCompletion({
+            model: 'text-davinci-003',
+            prompt: query,
+            max_tokens: 100,
+        });
+        res.json({ answer: response.data.choices[0].text.trim() });
+    } catch (error) {
+        console.error("Error querying AI:", error);
+        res.status(500).json({ answer: "Failed to get response from AI." });
+    }
+});
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syzygeist Air Wraith One AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-4">Syzygeist Air Wraith One AI</h1>
+        
+        <nav class="mb-6">
+            <ul class="flex space-x-4">
+                <li><a href="#synths" class="text-blue-500 hover:underline">Synths</a></li>
+                <li><a href="#create" class="text-blue-500 hover:underline">Create Music</a></li>
+                <li><a href="#support" class="text-blue-500 hover:underline">Support</a></li>
+            </ul>
+        </nav>
+
+        <section id="synths" class="mb-12">
+            <h2 class="text-2xl font-semibold">Explore Synths</h2>
+            <p>Discover our range of Diver synthesizers.</p>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Try Synths</button>
+        </section>
+
+        <section id="create" class="mb-12">
+            <h2 class="text-2xl font-semibold">Create Music</h2>
+            <textarea id="composition" rows="4" placeholder="Compose your music here..." class="w-full p-2 border rounded"></textarea>
+            <button id="saveComposition" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Save Composition</button>
+            <div id="saveMessage" class="mt-2 text-green-600"></div>
+        </section>
+
+        <section id="support" class="mb-12">
+            <h2 class="text-2xl font-semibold">Support</h2>
+            <input id="userQuery" type="text" placeholder="Ask me anything..." class="w-full p-2 border rounded">
+            <button id="askAI" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Ask AI</button>
+            <div id="aiResponse" class="mt-4 p-2 border rounded bg-gray-200"></div>
+        </section>
+    </div>
+
+    <script>
+        async function saveComposition() {
+            const composition = document.getElementById('composition').value;
+            if (!composition) {
+                alert("Please enter a composition before saving.");
+                return;
+            }
+            const response = await fetch('/api/save-composition', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ composition })
+            });
+            const result = await response.json();
+            document.getElementById('saveMessage').innerText = result.message;
+            document.getElementById('composition').value = ''; // Clear the textarea
+        }
+
+        async function askAI() {
+            const query = document.getElementById('userQuery').value;
+            if (!query) {
+                alert("Please enter a query to ask the AI.");
+                return;
+            }
+            const response = await fetch('/api/ask-ai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query })
+            });
+            const result = await response.json();
+            document.getElementById('aiResponse').innerText = result.answer || "No response from AI.";
+        }
+
+        document.getElementById('saveComposition').addEventListener('click', saveComposition);
+        document.getElementById('askAI').addEventListener('click', askAI);
+    </script>
+</body>
+</html>
+
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const { Configuration, OpenAIApi } = require('openai');
+
+const app = express();
+app.use(bodyParser.json());
+
+// MongoDB connection
+mongoose.connect('mongodb://localhost:27017/syzygeist', { useNewUrlParser: true, useUnifiedTopology: true });
+
+// Composition Schema
+const compositionSchema = new mongoose.Schema({
+    content: String,
+});
+const Composition = mongoose.model('Composition', compositionSchema);
+
+// OpenAI configuration
+const openai = new OpenAIApi(new Configuration({
+    apiKey: 'YOUR_OPENAI_API_KEY',
+}));
+
+// Save composition endpoint
+app.post('/api/save-composition', async (req, res) => {
+    const { composition } = req.body;
+    const newComposition = new Composition({ content: composition });
+    await newComposition.save();
+    res.json({ message: 'Composition saved successfully!' });
+});
+
+// Ask AI endpoint
+app.post('/api/ask-ai', async (req, res) => {
+    const { query } = req.body;
+    const response = await openai.createCompletion({
+        model: 'text-davinci-003',
+        prompt: query,
+        max_tokens: 100,
+    });
+    res.json({ answer: response.data.choices[0].text.trim() });
+});
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syzygeist Air Wraith One AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-4">Syzygeist Air Wraith One AI</h1>
+        
+        <nav class="mb-6">
+            <ul class="flex space-x-4">
+                <li><a href="#synths" class="text-blue-500">Synths</a></li>
+                <li><a href="#create" class="text-blue-500">Create Music</a></li>
+                <li><a href="#support" class="text-blue-500">Support</a></li>
+            </ul>
+        </nav>
+
+        <section id="synths" class="mb-12">
+            <h2 class="text-2xl font-semibold">Explore Synths</h2>
+            <p>Discover our range of Diver synthesizers.</p>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded">Try Synths</button>
+        </section>
+
+        <section id="create" class="mb-12">
+            <h2 class="text-2xl font-semibold">Create Music</h2>
+            <textarea id="composition" rows="4" class="w-full p-2 border"></textarea>
+            <button id="saveComposition" class="bg-blue-500 text-white px-4 py-2 rounded">Save Composition</button>
+        </section>
+
+        <section id="support" class="mb-12">
+            <h2 class="text-2xl font-semibold">Support</h2>
+            <input id="userQuery" type="text" placeholder="Ask me anything..." class="w-full p-2 border">
+            <button id="askAI" class="bg-blue-500 text-white px-4 py-2 rounded">Ask AI</button>
+            <div id="aiResponse" class="mt-4"></div>
+        </section>
+    </div>
+
+    <script>
+        document.getElementById('saveComposition').addEventListener('click', async () => {
+            const composition = document.getElementById('composition').value;
+            const response = await fetch('/api/save-composition', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ composition })
+            });
+            const result = await response.json();
+            alert(result.message);
+        });
+
+        document.getElementById('askAI').addEventListener('click', async () => {
+            const query = document.getElementById('userQuery').value;
+            const response = await fetch('/api/ask-ai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query })
+            });
+            const result = await response.json();
+            document.getElementById('aiResponse').innerText = result.answer;
+        });
+    </script>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syzygeist Air Wraith One AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-4">Syzygeist Air Wraith One AI</h1>
+        
+        <nav class="mb-6">
+            <ul class="flex space-x-4">
+                <li><a href="#synths" class="text-blue-500">Synths</a></li>
+                <li><a href="#build" class="text-blue-500">Build Apps</a></li>
+                <li><a href="#create" class="text-blue-500">Create Music</a></li>
+                <li><a href="#support" class="text-blue-500">Support</a></li>
+            </ul>
+        </nav>
+
+        <section id="synths" class="mb-12">
+            <h2 class="text-2xl font-semibold">Explore Synths</h2>
+            <p>Discover our range of Diver synthesizers.</p>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded">Try Synths</button>
+        </section>
+
+        <section id="build" class="mb-12">
+            <h2 class="text-2xl font-semibold">Build Your Apps</h2>
+            <p>Create applications and websites with our tools.</p>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded">Start Building</button>
+        </section>
+
+        <section id="create" class="mb-12">
+            <h2 class="text-2xl font-semibold">Create Music</h2>
+            <p>Use Diver synths to compose your own music.</p>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded">Start Composing</button>
+        </section>
+
+        <section id="support" class="mb-12">
+            <h2 class="text-2xl font-semibold">Support</h2>
+            <p>Need help? Our AI assistant is here for you!</p>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded">Chat with AI</button>
+        </section>
+    </div>
+    <script>
+        // Placeholder for AI chatbot functionality
+        function chatWithAI() {
+            alert("Chatbot is currently offline. Please leave a message.");
+        }
+    </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diver Synthesizer App</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-4">Diver Synthesizer App</h1>
+        
+        <nav class="mb-6">
+            <ul class="flex space-x-4">
+                <li><a href="#synths" class="text-blue-500">Synths</a></li>
+                <li><a href="#build" class="text-blue-500">Build Apps</a></li>
+                <li><a href="#full-song" class="text-blue-500">Create Full Song</a></li>
+                <li><a href="#tutorial" class="text-blue-500">Tutorials</a></li>
+            </ul>
+        </nav>
+
+        <section id="synths" class="mb-12">
+            <h2 class="text-2xl font-semibold">Diver Synths</h2>
+            <p>Explore our range of synthesizers:</p>
+            <ul class="list-disc list-inside mb-4">
+                <li>Diver: Proto-On Subtractive Synth</li>
+                <li>Diver: Celestial Solution Granular Synth</li>
+                <li>Diver: Surfer Wavetable Synth</li>
+            </ul>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded">Try Synths</button>
+        </section>
+
+        <section id="build" class="mb-12">
+            <h2 class="text-2xl font-semibold">Build Apps & Websites</h2>
+            <p>Use our tools to create your own applications and websites:</p>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded">Start Building</button>
+        </section>
+
+        <section id="full-song" class="mb-12">
+            <h2 class="text-2xl font-semibold">Create a Full Song</h2>
+            <p>Learn how to use Diver synths to compose music:</p>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded">Start Composing</button>
+        </section>
+
+        <section id="tutorial" class="mb-12">
+            <h2 class="text-2xl font-semibold">Tutorials</h2>
+            <p>Access our tutorials to learn the process:</p>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded">View Tutorials</button>
+        </section>
+    </div>
+</body>
+</html>
+
+package com.example.syzygeist.model;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "compositions")
+public class Composition {
+    @Id
+    private String id;
+    private String content;
+
+    public Composition(String content) {
+        this.content = content;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+}
+
+
+
+package com.example.syzygeist;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SyzygeistApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(SyzygeistApplication.class, args);
+    }
+}
+
+
+const { AudioContext } = require('web-audio-api'); // Use web-audio-api for Node.js
+const express = require('express');
+
+class Voice {
+    constructor() {
+        this.attackTime = 0.1; // 100ms
+        this.decayTime = 0.1;  // 100ms
+        this.sustainLevel = 0.7;
+        this.releaseTime = 0.2; // 200ms
+        this.frequency = 440.0; // A4
+        this.modulationDepth = 0.5; // Modulation depth
+    }
+
+    generateSound(context) {
+        const oscillator = context.createOscillator();
+        oscillator.frequency.setValueAtTime(this.frequency, context.currentTime);
+        
+        const gainNode = context.createGain();
+        gainNode.gain.setValueAtTime(0, context.currentTime);
+        gainNode.gain.linearRampToValueAtTime(1, context.currentTime + this.attackTime);
+        gainNode.gain.linearRampToValueAtTime(this.sustainLevel, context.currentTime + this.attackTime + this.decayTime);
+        gainNode.gain.linearRampToValueAtTime(0, context.currentTime + this.attackTime + this.decayTime + this.releaseTime);
+
+        oscillator.connect(gainNode);
+        gainNode.connect(context.destination);
+
+        oscillator.start();
+        oscillator.stop(context.currentTime + this.attackTime + this.decayTime + this.releaseTime);
+    }
+}
+
+const app = express();
+const port = 3000;
+const context = new AudioContext();
+
+app.get('/play', (req, res) => {
+    const voice = new Voice();
+    voice.generateSound(context);
+    res.send('Playing sound!');
+});
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+});
+
+
+
+
+
