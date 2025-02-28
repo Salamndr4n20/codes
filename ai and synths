@@ -1,0 +1,1256 @@
+ Here are the updated standalone app codes 
+
+1. Diver App
+
+Standalone wavetable synthesizer with plugin capability.
+Key Features:
+
+Advanced wavetable synthesis.
+
+3D volumetric waveform display.
+
+Plugin capability to connect with other apps like Deep Diver and Echo Dawn.
+
+
+# Diver App Code
+class DiverApp:
+    def __init__(self):
+        self.name = "Diver"
+        self.features = [
+            "Wavetable synthesis",
+            "3D volumetric waveform display",
+            "Plugin compatibility"
+        ]
+    
+    def display_waveform(self, waveform_data):
+        print("Rendering 3D waveform display...")
+    
+    def load_plugin(self, plugin_name):
+        print(f"Loading plugin: {plugin_name}")
+    
+    def run(self):
+        print(f"{self.name} is running with features: {', '.join(self.features)}")
+
+if __name__ == "__main__":
+    diver = DiverApp()
+    diver.run()
+
+
+2. Deep Diver App
+
+Standalone granular synthesizer.
+Key Features:
+
+Granular synthesis.
+
+Image-to-wave conversion.
+
+Plugin capability.
+
+
+# Deep Diver App Code
+class DeepDiverApp:
+    def __init__(self):
+        self.name = "Deep Diver"
+        self.features = [
+            "Granular synthesis",
+            "Image-to-wave conversion",
+            "Plugin compatibility"
+        ]
+    
+    def generate_sound_from_image(self, image_path):
+        print(f"Generating sound from image at {image_path}...")
+    
+    def run(self):
+        print(f"{self.name} is running with features: {', '.join(self.features)}")
+
+if __name__ == "__main__":
+    deep_diver = DeepDiverApp()
+    deep_diver.run()
+
+
+3. Diverse Water App
+
+Standalone subtractive synthesizer.
+Key Features:
+
+Simulated analog and digital sound output.
+
+Assignable knobs and ADSR envelopes.
+
+Soundwave display.
+
+
+# Diverse Water App Code
+class DiverseWaterApp:
+    def __init__(self):
+        self.name = "Diverse Water"
+        self.features = [
+            "Subtractive synthesis",
+            "Analog and digital sound simulation",
+            "Assignable knobs and ADSR envelopes",
+            "Soundwave display"
+        ]
+    
+    def toggle_sound_output(self, mode):
+        print(f"Switched to {mode} mode sound output.")
+    
+    def run(self):
+        print(f"{self.name} is running with features: {', '.join(self.features)}")
+
+if __name__ == "__main__":
+    diverse_water = DiverseWaterApp()
+    diverse_water.run()
+
+
+
+4. Parades of the Profound App
+
+Standalone MIDI step sequencer with a piano roll.
+Key Features:
+
+MIDI step sequencing.
+
+Piano roll for melody creation.
+
+Compatibility with external hardware and apps.
+
+
+# Parades of the Profound App Code
+class ParadesOfTheProfoundApp:
+    def __init__(self):
+        self.name = "Parades of the Profound"
+        self.features = [
+            "MIDI step sequencing",
+            "Piano roll feature",
+            "Hardware and app compatibility"
+        ]
+    
+    def sequence_midi(self, midi_data):
+        print("Sequencing MIDI data...")
+    
+    def open_piano_roll(self):
+        print("Opening piano roll...")
+    
+    def run(self):
+        print(f"{self.name} is running with features: {', '.join(self.features)}")
+
+if __name__ == "__main__":
+    parades = ParadesOfTheProfoundApp()
+    parades.run()
+
+
+5. Echo Dawn App
+
+Standalone AI assistant for higher consciousness and functioning.
+
+Key Features:
+
+AI-guided learning.
+
+Offline dictionary support.
+
+Interactive tutorials and hints.
+
+
+# Echo Dawn App Code
+class EchoDawnApp:
+    def __init__(self):
+        self.name = "Echo Dawn"
+        self.features = [
+            "AI-guided learning",
+            "Offline dictionary support",
+            "Interactive tutorials and hints"
+        ]
+    
+    def search_dictionary(self, term):
+        print(f"Searching for the term: {term}...")
+    
+    def activate_learning_mode(self):
+        print("Learning mode activated. Providing interactive guidance...")
+    
+    def run(self):
+        print(f"{self.name} is running with features: {', '.join(self.features)}")
+
+if __name__ == "__main__":
+    echo_dawn = EchoDawnApp()
+    echo_dawn.run()
+
+
+How to Use:
+
+Each app is standalone and can be run separately.
+
+For plugin compatibility, integrate using the load_plugin() method in Diver or Deep Diver.
+
+
+
+
+
+Og codes;
+title=<DiverAppBundleUI> author=<Eric Heinricy> orientation=<portrait|landscape>
+
+
+DiverMain code:
+
+import os
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.dropdown import DropDown
+
+# Plugin Manager Class
+class PluginManager:
+    def __init__(self):
+        self.plugins = {}
+
+    def register_plugin(self, name, launch_function):
+        """Register a plugin with its launch function."""
+        self.plugins[name] = launch_function
+
+    def launch_plugin(self, name):
+        """Launch the specified plugin."""
+        if name in self.plugins:
+            self.plugins[name]()
+        else:
+            print(f"Plugin {name} not found.")
+
+
+# Diver App Main Interface
+class DiverMainApp(App):
+    def build(self):
+        self.plugin_manager = PluginManager()
+
+        # Register Plugins
+        self.plugin_manager.register_plugin("EchoDawnApp", self.launch_echo_dawn)
+        self.plugin_manager.register_plugin("DiverWaveTableSynth", self.launch_wave_table_synth)
+        self.plugin_manager.register_plugin("DeepDiver", self.launch_deep_diver)
+
+        # Main UI
+        layout = BoxLayout(orientation="vertical", padding=10, spacing=10)
+        label = Label(text="Welcome to Diver App", font_size="24sp", size_hint=(1, 0.2))
+        layout.add_widget(label)
+
+        # Dropdown Menu for Plugins
+        plugin_dropdown = DropDown()
+        for plugin_name in self.plugin_manager.plugins.keys():
+            btn = Button(text=plugin_name, size_hint_y=None, height=40)
+            btn.bind(on_release=lambda btn: plugin_dropdown.select(btn.text))
+            plugin_dropdown.add_widget(btn)
+
+        dropdown_button = Button(text="Select Plugin", size_hint=(1, 0.2))
+        dropdown_button.bind(on_release=plugin_dropdown.open)
+        plugin_dropdown.bind(on_select=lambda instance, x: self.launch_plugin(x))
+        layout.add_widget(dropdown_button)
+
+        return layout
+
+    def launch_plugin(self, plugin_name):
+        """Launch selected plugin."""
+        self.plugin_manager.launch_plugin(plugin_name)
+
+    def launch_echo_dawn(self):
+        """Launch EchoDawnApp Plugin."""
+        print("Launching EchoDawnApp...")
+        # EchoDawnApp functionality here
+        os.system("python echo_dawn.py")  # Placeholder for EchoDawnApp script execution
+
+    def launch_wave_table_synth(self):
+        """Launch DiverWaveTableSynth Plugin."""
+        print("Launching DiverWaveTableSynth...")
+        os.system("python diver_wave_table_synth.py")  # Placeholder for DiverWaveTableSynth script execution
+
+    def launch_deep_diver(self):
+        """Launch Deep Diver Plugin."""
+        print("Launching DeepDiver...")
+        os.system("python deep_diver.py")  # Placeholder for Deep Diver script execution
+
+
+# Run Main App
+if __name__ == "__main__":
+    DiverMainApp().run()
+
+
+EchoDawnAI;
+
+import socket
+import os
+import json
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+
+
+# Check internet connection
+def is_connected():
+    try:
+        socket.create_connection(("8.8.8.8", 53), timeout=5)
+        return True
+    except OSError:
+        return False
+
+
+# Fetch dictionary entry or fallback response
+def fetch_response(query, dictionary_path="dictionary.json"):
+    if is_connected():
+        return fetch_online_response(query)
+    else:
+        return search_offline_dictionary(query, dictionary_path)
+
+
+# Offline dictionary search
+def search_offline_dictionary(query, dictionary_path):
+    if not os.path.exists(dictionary_path):
+        return "Dictionary file not found."
+
+    with open(dictionary_path, "r") as file:
+        dictionary = json.load(file)
+
+    return dictionary.get(query.lower(), "Word not found in offline dictionary.")
+
+
+# Placeholder for online response
+def fetch_online_response(query):
+    return f"Online answer for '{query}' (functionality coming soon)."
+
+
+# Echo Dawn App UI
+class EchoDawnApp(App):
+    def build(self):
+        self.layout = BoxLayout(orientation="vertical", padding=10, spacing=10)
+
+        self.output_label = Label(text="Welcome to Echo Dawn!", size_hint=(1, 0.2))
+        self.layout.add_widget(self.output_label)
+
+        self.input_field = TextInput(hint_text="Ask a question", multiline=False, size_hint=(1, 0.2))
+        self.layout.add_widget(self.input_field)
+
+        self.ask_button = Button(text="Contemplate", size_hint=(1, 0.2))
+        self.ask_button.bind(on_press=self.handle_query)
+        self.layout.add_widget(self.ask_button)
+
+        return self.layout
+
+    def handle_query(self, instance):
+        query = self.input_field.text.strip()
+        if not query:
+            self.output_label.text = "Please enter a question."
+        else:
+            response = fetch_response(query)
+            self.output_label.text = response
+
+
+# Main Execution
+if __name__ == "__main__":
+    EchoDawnApp().run()
+
+Diverse Waters Subtractive Synth;
+
+# Diverse Water Standalone Subtractive Synth Plugin
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import square, sawtooth
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.slider import Slider
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.dropdown import DropDown
+
+class SoundEngine:
+    def __init__(self):
+        self.output_mode = "Digital"  # Digital, Analog, 8-bit, 12-bit
+        self.ic_knobs = [0.5] * 8  # Default ICO knob values
+        self.lfo_knobs = [0.5] * 4  # Default LFO knob values
+        self.adsr_envelopes = {"assignable_1": [0.1, 0.2, 0.7, 0.5], 
+                               "assignable_2": [0.1, 0.3, 0.8, 0.5], 
+                               "output": [0.1, 0.2, 0.6, 0.4]}
+
+    def generate_waveform(self, frequency, waveform="sine"):
+        t = np.linspace(0, 1, 44100)
+        if waveform == "sine":
+            return np.sin(2 * np.pi * frequency * t)
+        elif waveform == "square":
+            return square(2 * np.pi * frequency * t)
+        elif waveform == "sawtooth":
+            return sawtooth(2 * np.pi * frequency * t)
+
+    def process_sound(self, waveform):
+        if self.output_mode == "8-bit":
+            return np.round(waveform * 127) / 127
+        elif self.output_mode == "12-bit":
+            return np.round(waveform * 2047) / 2047
+        elif self.output_mode == "Analog":
+            return waveform + np.random.normal(0, 0.01, len(waveform))
+        else:
+            return waveform
+
+    def set_output_mode(self, mode):
+        self.output_mode = mode
+
+
+class DiverseWaterApp(App):
+    def build(self):
+        layout = BoxLayout(orientation="vertical", padding=10, spacing=10)
+        self.engine = SoundEngine()
+        
+        # Dropdown for output mode selection
+        dropdown = DropDown()
+        for mode in ["Digital", "Analog", "8-bit", "12-bit"]:
+            btn = Button(text=mode, size_hint_y=None, height=44)
+            btn.bind(on_release=lambda btn: self.set_output_mode(btn.text))
+            dropdown.add_widget(btn)
+        
+        main_button = Button(text="Select Output Mode")
+        main_button.bind(on_release=dropdown.open)
+        dropdown.bind(on_select=lambda instance, x: setattr(main_button, 'text', x))
+        layout.add_widget(main_button)
+        
+        # Sliders for ICO knobs
+        for i in range(8):
+            slider = Slider(min=0, max=1, value=self.engine.ic_knobs[i])
+            slider.bind(value=lambda instance, x, i=i: self.set_ic_knob(i, x))
+            layout.add_widget(Label(text=f"ICO Knob {i+1}"))
+            layout.add_widget(slider)
+        
+        # Sliders for LFO knobs
+        for i in range(4):
+            slider = Slider(min=0, max=1, value=self.engine.lfo_knobs[i])
+            slider.bind(value=lambda instance, x, i=i: self.set_lfo_knob(i, x))
+            layout.add_widget(Label(text=f"LFO Knob {i+1}"))
+            layout.add_widget(slider)
+        
+        # Button to generate and display waveform
+        generate_button = Button(text="Generate Waveform")
+        generate_button.bind(on_press=self.display_waveform)
+        layout.add_widget(generate_button)
+        
+        return layout
+
+    def set_output_mode(self, mode):
+        self.engine.set_output_mode(mode)
+
+    def set_ic_knob(self, index, value):
+        self.engine.ic_knobs[index] = value
+
+    def set_lfo_knob(self, index, value):
+        self.engine.lfo_knobs[index] = value
+
+    def display_waveform(self, instance):
+        waveform = self.engine.generate_waveform(frequency=440, waveform="sine")
+        processed_waveform = self.engine.process_sound(waveform)
+        plt.plot(processed_waveform[:1000])
+        plt.title("Soundwave Display")
+        plt.show()
+
+
+if __name__ == "__main__":
+    DiverseWaterApp().run()
+
+
+DiverWavetableSynth code:
+
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.slider import Slider
+from kivy.uix.label import Label
+
+
+# Generate a waveform based on parameters
+def generate_waveform(wave_type="sine", frequency=440, amplitude=1, duration=1, sample_rate=44100):
+    t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
+    if wave_type == "sine":
+        return amplitude * np.sin(2 * np.pi * frequency * t)
+    elif wave_type == "square":
+        return amplitude * np.sign(np.sin(2 * np.pi * frequency * t))
+    elif wave_type == "sawtooth":
+        return amplitude * 2 * (t * frequency - np.floor(0.5 + t * frequency))
+    elif wave_type == "triangle":
+        return amplitude * (2 * np.abs(2 * (t * frequency - np.floor(t * frequency + 0.5))) - 1)
+    else:
+        raise ValueError("Invalid wave type specified.")
+
+
+# Create a 3D volumetric display of the waveform
+def plot_3d_waveform(waveform, title="3D Waveform Display"):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    sample_points = np.arange(len(waveform))
+    ax.plot(sample_points, waveform, zs=0, zdir='z', label='Waveform', color='blue')
+    ax.set_title(title)
+    ax.set_xlabel("Sample Points")
+    ax.set_ylabel("Amplitude")
+    ax.set_zlabel("Depth")
+    plt.show()
+
+
+# Kivy UI for the Synth
+class DiverWavetableSynthApp(App):
+    def build(self):
+        self.layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+
+        # Waveform Parameters
+        self.frequency = 440
+        self.amplitude = 1
+        self.wave_type = "sine"
+
+        # Labels
+        self.freq_label = Label(text=f"Frequency: {self.frequency} Hz", size_hint=(1, 0.1))
+        self.layout.add_widget(self.freq_label)
+
+        self.amp_label = Label(text=f"Amplitude: {self.amplitude}", size_hint=(1, 0.1))
+        self.layout.add_widget(self.amp_label)
+
+        # Sliders for Frequency and Amplitude
+        self.freq_slider = Slider(min=20, max=2000, value=self.frequency, step=1, size_hint=(1, 0.2))
+        self.freq_slider.bind(value=self.update_frequency)
+        self.layout.add_widget(self.freq_slider)
+
+        self.amp_slider = Slider(min=0.1, max=1.0, value=self.amplitude, step=0.1, size_hint=(1, 0.2))
+        self.amp_slider.bind(value=self.update_amplitude)
+        self.layout.add_widget(self.amp_slider)
+
+        # Waveform Selector Buttons
+        self.wave_buttons = BoxLayout(size_hint=(1, 0.2))
+        for wave_type in ["sine", "square", "sawtooth", "triangle"]:
+            btn = Button(text=wave_type.capitalize())
+            btn.bind(on_press=lambda instance, wt=wave_type: self.set_wave_type(wt))
+            self.wave_buttons.add_widget(btn)
+        self.layout.add_widget(self.wave_buttons)
+
+        # Generate Waveform Button
+        self.gen_button = Button(text="Generate & Display Waveform
+
+
+Deep Divers code;
+
+from kivy.uix.button import Button
+from GranularSynthPlugin import GranularSynthPlugin
+
+class DiverApp(App):
+    def build(self):
+        layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+
+        # Button to activate granular synthesis
+        self.granular_button = Button(text="Apply Granular Synthesis", size_hint=(1, 0.1))
+        self.granular_button.bind(on_press=self.on_granular_button_pressed)
+        layout.add_widget(self.granular_button)
+
+        return layout
+
+    def on_granular_button_pressed(self, instance):
+        # Create an instance of the granular synth plugin
+        synth_plugin = GranularSynthPlugin()
+
+        # Example: Apply granular synthesis to an audio file
+        synth_plugin.apply_granular_synthesis("path_to_audio_file.wav")
+
+
+1. Image-to-Waveform Integration:
+
+Users can select an image to generate a waveform. The image is processed by converting it to grayscale, resizing it to match one second of audio (44,100 samples), and then using the pixel intensity to create a waveform.
+
+2. Display:
+
+The waveform is updated both visually (as a simple plot) and in terms of the synth's audio output.
+
+3. UI for Image Selection:
+
+The app allows users to choose an image using the FileChooserIconView. Once selected, it processes the image and updates the synth's waveform accordingly.
+
+4. Wavetable Synth:
+
+The synth supports different waveforms (sine, square, saw) and allows frequency adjustments. When an image is processed, the synth's waveform is replaced with the one generated from the image.
+
+5. 3D Display Placeholder:
+
+A placeholder for a volumetric 3D display is set up (Image widget). You can replace this with a more complex visualization or use something like a 3D audio visualizer if desired.
+
+
+Here’s the updated Diver app code with the 3D volumetric waveform display integrated into the wavetable synth. This will use PyOpenGL for rendering the visualization. The code assumes you have installed all dependencies like PyOpenGL, numpy, and kivy.
+
+Full Integrated Code with 3D Display for the DiverAppUI;
+
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.slider import Slider
+from kivy.clock import Clock
+from OpenGL.GL import *
+from OpenGL.GLU import *
+import numpy as np
+
+# Wavetable Synth Logic
+class WavetableSynth:
+    def __init__(self):
+        self.frequency = 440.0  # Default frequency (A4)
+        self.sample_rate = 44100  # Samples per second
+        self.phase = 0.0
+        self.waveform = self.generate_waveform()
+
+    def generate_waveform(self):
+        t = np.linspace(0, 1, self.sample_rate, endpoint=False)
+        return np.sin(2 * np.pi * self.frequency * t)
+
+    def update_frequency(self, frequency):
+        self.frequency = frequency
+        self.waveform = self.generate_waveform()
+
+# OpenGL Display for 3D Visualization
+class WaveformVisualizer:
+    def __init__(self):
+        self.waveform = None
+
+    def set_waveform(self, waveform):
+        self.waveform = waveform
+
+    def render(self):
+        if self.waveform is None:
+            return
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        glLoadIdentity()
+        gluPerspective(45, 1.33, 0.1, 50.0)
+        glTranslatef(0.0, 0.0, -5.0)
+
+        glBegin(GL_LINE_STRIP)
+        for i, value in enumerate(self.waveform[:1000]):  # Render a subset for performance
+            x = i / 1000.0 * 2 - 1  # Normalize x-coordinates
+            y = value
+            z = np.sin(i * 0.1) * 0.2  # Add 3D depth modulation
+            glVertex3f(x, y, z)
+        glEnd()
+        glFlush()
+
+# Kivy UI
+class DiverAppUI(BoxLayout):
+    def __init__(self, **kwargs):
+        super().__init__(orientation='vertical', **kwargs)
+        self.synth = WavetableSynth()
+        self.visualizer = WaveformVisualizer()
+
+        self.label = Label(text="Frequency: 440 Hz")
+        self.add_widget(self.label)
+
+        self.slider = Slider(min=100, max=2000, value=440, step=1)
+        self.slider.bind(value=self.on_slider_change)
+        self.add_widget(self.slider)
+
+        self.update_button = Button(text="Update Waveform")
+        self.update_button.bind(on_press=self.update_waveform)
+        self.add_widget(self.update_button)
+
+    def on_slider_change(self, instance, value):
+        self.label.text = f"Frequency: {int(value)} Hz"
+
+    def update_waveform(self, instance):
+        frequency = self.slider.value
+        self.synth.update_frequency(frequency)
+        self.visualizer.set_waveform(self.synth.waveform)
+
+# Main App
+class DiverApp(App):
+    def build(self):
+        layout = DiverAppUI()
+        Clock.schedule_interval(self.update_visualization, 1 / 60.0)  # 60 FPS
+        return layout
+
+    def update_visualization(self, dt):
+        layout = self.root
+        if isinstance(layout, DiverAppUI):
+            layout.visualizer.render()
+
+if __name__ == "__main__":
+    DiverApp().run()
+
+Key Features Added:
+
+1. 3D Volumetric Display: The wavetable is visualized in 3D using PyOpenGL.
+2. Frequency Control: Users can adjust the frequency of the waveform using a slider.
+
+3. Real-Time Updates: The waveform visualization updates dynamically as the frequency changes.
+
+4. Interactive UI: Integrated with Kivy for user-friendly interaction.
+
+Instructions:
+
+1. Install Required Libraries:
+
+pip install kivy numpy PyOpenGL
+
+2. Run the App: Save the code as diver_app.py and execute it using Python:
+
+python diver_app.py
+
+3. Controls:
+
+Use the slider to adjust the frequency.
+
+Press "Update Waveform" to refresh the visualization.
+
+The ai app: echo dawn
+
+Echo Dawn as a standalone AI app:
+
+Key Features:
+
+1. Core Functionality:
+
+The app will focus on AI-powered tasks like answering questions, generating text, and providing code assistance.
+
+It can integrate with other systems and serve as a plugin for other apps like Diver if needed.
+
+2. Voice Interactions:
+
+Speech-to-text and text-to-speech capabilities (using libraries like gTTS for speech synthesis and speech_recognition for speech-to-text).
+
+3. Natural Language Understanding:
+
+Echo Dawn can use NLP models to process natural language queries and perform tasks.
+
+4. Image to Wave (as a feature):
+
+Users can provide images, which will be converted into waves or visual representations (integrating your earlier “image to wave” functionality).
+5. 3D Display:
+
+Implement a basic 3D or volumetric visual representation for wavetables or other AI-generated visualizations.
+
+6. Integration:
+
+The app will also have the flexibility to function independently or as a plugin (like Diver).
+
+
+EchoDawnAI Code:
+
+import tensorflow as tf
+import numpy as np
+import socket
+import wikipediaapi
+from transformers import pipeline
+from gtts import gTTS
+import os
+import speech_recognition as sr
+import matplotlib.pyplot as plt
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.image import Image
+from PIL import Image as PILImage
+import io
+
+# Helper Functions
+
+def is_connected():
+    try:
+        socket.create_connection(("8.8.8.8", 53), timeout=5)
+        return True, "Internet is available"
+    except OSError as e:
+        return False, f"Connection failed: {e}"
+
+def fetch_wikipedia_summary(query):
+    wiki = wikipediaapi.Wikipedia('en')
+    page = wiki.page(query)
+    if page.exists():
+        return page.summary[:500]  # Limit to 500 characters
+    else:
+        return "No results found on Wikipedia."
+
+def offline_chat_response(query):
+    chatbot = pipeline("text-generation", model="gpt2")
+    response = chatbot(query, max_length=50, num_return_sequences=1)
+    return response[0]['generated_text']
+
+def text_to_speech(text):
+    tts = gTTS(text=text, lang='en')
+    tts.save("output.mp3")
+    os.system("start output.mp3")  # Use "open" on macOS or "xdg-open" on Linux
+
+def speech_to_text():
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listening...")
+        try:
+            audio = recognizer.listen(source)
+            return recognizer.recognize_google(audio)
+        except sr.UnknownValueError:
+            return "Sorry, I didn't catch that."
+        except sr.RequestError as e:
+            return f"Request failed; {e}"
+
+# Image to Wave Functionality
+
+def image_to_wave(image_path):
+    img = PILImage.open(image_path).convert("L")  # Convert to grayscale
+    img_array = np.array(img)
+    wave = np.fft.fft2(img_array)  # Apply Fourier Transform
+    wave = np.abs(wave)  # Get magnitude
+    return wave
+
+def display_wave(wave_data):
+    fig = plt.figure(figsize=(8, 8))
+    ax = fig.add_subplot(111, projection='3d')
+    x = np.linspace(0, wave_data.shape[0], wave_data.shape[0])
+    y = np.linspace(0, wave_data.shape[1], wave_data.shape[1])
+    x, y = np.meshgrid(x, y)
+    ax.plot_surface(x, y, wave_data, cmap='viridis')
+    plt.show()
+
+# Echo Dawn AI App Class
+
+class EchoDawnApp(App):
+    def __init__(self):
+        super().__init__()
+        self.wifi_connected = False
+
+    def build(self):
+        self.layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+
+        self.output_label = Label(text="Welcome to Echo Dawn!", size_hint=(1, 0.2))
+        self.layout.add_widget(self.output_label)
+
+        self.input_field = TextInput(hint_text="Ask a question or enter data", size_hint=(1, 0.2))
+        self.layout.add_widget(self.input_field)
+
+        self.query_button = Button(text="Ask Question", size_hint=(1, 0.2))
+        self.query_button.bind(on_press=self.on_query)
+        self.layout.add_widget(self.query_button)
+
+        self.speech_to_text_button = Button(text="Speech-to-Text", size_hint=(1, 0.2))
+        self.speech_to_text_button.bind(on_press=self.on_speech_to_text)
+        self.layout.add_widget(self.speech_to_text_button)
+
+        self.text_to_speech_button = Button(text="Text-to-Speech", size_hint=(1, 0.2))
+        self.text_to_speech_button.bind(on_press=self.on_text_to_speech)
+        self.layout.add_widget(self.text_to_speech_button)
+
+        self.image_upload_button = Button(text="Upload Image for Wave", size_hint=(1, 0.2))
+        self.image_upload_button.bind(on_press=self.on_image_upload)
+        self.layout.add_widget(self.image_upload_button)
+
+        return self.layout
+
+    def on_query(self, instance):
+        self.check_wifi()
+        query = self.input_field.text.strip()
+        if not query:
+            self.output_label.text = "Please enter a question!"
+            return
+        
+        if self.wifi_connected:
+            self.output_label.text = "Fetching answer online..."
+            answer = fetch_wikipedia_summary(query)
+        else:
+            self.output_label.text = "Fetching answer offline..."
+            answer = offline_chat_response(query)
+        
+        self.output_label.text = f"Answer: {answer}"
+
+    def on_speech_to_text(self, instance):
+        self.output_label.text = "Listening..."
+        text = speech_to_text()
+        self.output_label.text = f"You said: {text}"
+
+    def on_text_to_speech(self, instance):
+        text = self.input_field.text.strip()
+        if text:
+            text_to_speech(text)
+            self.output_label.text = "Playing your text!"
+        else:
+            self.output_label.text = "Please enter text to play."
+
+    def on_image_upload(self, instance):
+        image_path = 'path_to_image.jpg'  # Get the image from file input (e.g., using a file picker)
+        self.output_label.text = "Processing image to wave..."
+        wave_data = image_to_wave(image_path)
+        display_wave(wave_data)
+
+    def check_wifi(self):
+        self.wifi_connected, _ = is_connected()
+
+# Main Execution
+
+if __name__ == "__main__":
+    EchoDawnApp().run()
+
+
+
+Updated EchoDawnApp;
+
+
+import socket
+import os
+import json
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+
+
+# Check internet connection
+def is_connected():
+    try:
+        socket.create_connection(("8.8.8.8", 53), timeout=5)
+        return True
+    except OSError:
+        return False
+
+
+# Fetch dictionary entry or fallback response
+def fetch_response(query, dictionary_path="dictionary.json"):
+    if is_connected():
+        return fetch_online_response(query)
+    else:
+        return search_offline_dictionary(query, dictionary_path)
+
+
+# Offline dictionary search
+def search_offline_dictionary(query, dictionary_path):
+    if not os.path.exists(dictionary_path):
+        return "Dictionary file not found."
+
+    with open(dictionary_path, "r") as file:
+        dictionary = json.load(file)
+
+    return dictionary.get(query.lower(), "Word not found in offline dictionary.")
+
+
+# Placeholder for online response
+def fetch_online_response(query):
+    return f"Online answer for '{query}' (functionality coming soon)."
+
+
+# Echo Dawn App UI
+class EchoDawnApp(App):
+    def build(self):
+        self.layout = BoxLayout(orientation="vertical", padding=10, spacing=10)
+
+        self.output_label = Label(text="Welcome to Echo Dawn!", size_hint=(1, 0.2))
+        self.layout.add_widget(self.output_label)
+
+        self.input_field = TextInput(hint_text="Ask a question", multiline=False, size_hint=(1, 0.2))
+        self.layout.add_widget(self.input_field)
+
+        self.ask_button = Button(text="Contemplate", size_hint=(1, 0.2))
+        self.ask_button.bind(on_press=self.handle_query)
+        self.layout.add_widget(self.ask_button)
+
+        return self.layout
+
+    def handle_query(self, instance):
+        query = self.input_field.text.strip()
+        if not query:
+            self.output_label.text = "Please enter a question."
+        else:
+            response = fetch_response(query)
+            self.output_label.text = response
+
+
+# Main Execution
+if __name__ == "__main__":
+    EchoDawnApp().run()
+
+
+
+Step Sequencer:
+
+
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.button import Button
+from kivy.uix.textinput import TextInput
+from kivy.uix.filechooser import FileChooserListView
+import mido
+import time
+
+class ParadesOfTheProfoundApp(App):
+    def build(self):
+        self.mode = "standalone"  # Toggle between "standalone" and "plugin"
+
+        layout = BoxLayout(orientation='vertical', spacing=10, padding=10)
+
+        # Mode Toggle
+        mode_layout = BoxLayout(orientation='horizontal')
+        standalone_btn = Button(text="Standalone Mode")
+        plugin_btn = Button(text="Plugin Mode")
+        standalone_btn.bind(on_press=lambda _: self.set_mode("standalone"))
+        plugin_btn.bind(on_press=lambda _: self.set_mode("plugin"))
+        mode_layout.add_widget(standalone_btn)
+        mode_layout.add_widget(plugin_btn)
+        layout.add_widget(mode_layout)
+
+        # Sequencer Grid
+        self.grid = GridLayout(cols=16, rows=4, spacing=5)
+        self.step_buttons = []
+        for i in range(64):  # 64 steps
+            btn = Button(text=str(i + 1), size_hint=(None, None), size=(40, 40))
+            btn.bind(on_press=self.toggle_step)
+            self.step_buttons.append(btn)
+            self.grid.add_widget(btn)
+        layout.add_widget(self.grid)
+
+        # MIDI Controls
+        midi_controls = BoxLayout(orientation='horizontal')
+        self.note_input = TextInput(text="60", multiline=False, size_hint=(None, None), size=(60, 40))
+        self.velocity_input = TextInput(text="100", multiline=False, size_hint=(None, None), size=(60, 40))
+        midi_controls.add_widget(Button(text="Note:"))
+        midi_controls.add_widget(self.note_input)
+        midi_controls.add_widget(Button(text="Velocity:"))
+        midi_controls.add_widget(self.velocity_input)
+        layout.add_widget(midi_controls)
+
+        # Play and Save Buttons
+        play_save_layout = BoxLayout(orientation='horizontal')
+        play_button = Button(text="Play Sequence")
+        play_button.bind(on_press=self.play_sequence)
+        save_button = Button(text="Save MIDI")
+        save_button.bind(on_press=self.save_sequence)
+        play_save_layout.add_widget(play_button)
+        play_save_layout.add_widget(save_button)
+        layout.add_widget(play_save_layout)
+
+        return layout
+
+    def set_mode(self, mode):
+        self.mode = mode
+        print(f"Mode set to: {self.mode}")
+
+    def toggle_step(self, instance):
+        step_index = self.step_buttons.index(instance)
+        if instance.background_color == [1, 1, 1, 1]:  # White
+            instance.background_color = [0, 1, 0, 1]  # Green
+        else:
+            instance.background_color = [1, 1, 1, 1]  # White
+
+    def play_sequence(self, instance):
+        print(f"Playing sequence in {self.mode} mode.")
+
+    def save_sequence(self, instance):
+        print("Saving sequence as MIDI file...")
+
+if __name__ == '__main__':
+    ParadesOfTheProfoundApp().run()
+
+
+
+
+
+The  og diver app ui:
+
+
+
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.slider import Slider
+from kivy.uix.label import Label
+from kivy.uix.togglebutton import ToggleButton
+from kivy.graphics import Line, Color
+from kivy.clock import Clock
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import sawtooth, square
+
+# Core Synth Components
+class WavetableSynth:
+    def __init__(self):
+        self.wave_type = "sine"
+        self.frequency = 440.0
+        self.amplitude = 0.5
+        self.sample_rate = 44100
+
+    def generate_wave(self, duration=1.0):
+        t = np.linspace(0, duration, int(self.sample_rate * duration), endpoint=False)
+        if self.wave_type == "sine":
+            return self.amplitude * np.sin(2 * np.pi * self.frequency * t)
+        elif self.wave_type == "saw":
+            return self.amplitude * sawtooth(2 * np.pi * self.frequency * t)
+        elif self.wave_type == "square":
+            return self.amplitude * square(2 * np.pi * self.frequency * t)
+        else:
+            return np.zeros_like(t)
+
+    def set_wave_type(self, wave_type):
+        self.wave_type = wave_type
+
+    def set_frequency(self, freq):
+        self.frequency = freq
+
+    def set_amplitude(self, amp):
+        self.amplitude = amp
+
+
+# Volumetric Display Component
+class VolumetricDisplay(BoxLayout):
+    def __init__(self, synth, **kwargs):
+        super().__init__(**kwargs)
+        self.synth = synth
+        self.canvas_width = 500
+        self.canvas_height = 500
+        self.lines = []
+
+        with self.canvas:
+            Color(1, 1, 1)
+            self.lines = [Line(width=1.5) for _ in range(3)]  # 3D axes
+
+        Clock.schedule_interval(self.update_display, 1/30)
+
+    def update_display(self, dt):
+        wave = self.synth.generate_wave(0.1)
+        self.canvas.clear()
+        with self.canvas:
+            Color(0.1, 0.6, 1)  # Customize for color
+            for i, line in enumerate(self.lines):
+                data = np.roll(wave, i * len(wave) // 3)
+                points = [((x / len(data)) * self.canvas_width, (y + 1) * self.canvas_height / 2) for x, y in enumerate(data)]
+                line.points = sum(points, ())  # Flatten points for rendering
+
+
+# Effects Library
+class EffectsLibrary:
+    def __init__(self):
+        self.effects = {
+            "reverb": self.reverb,
+            "delay": self.delay,
+            "distortion": self.distortion
+        }
+
+    def apply_effect(self, wave, effect_name, **kwargs):
+        if effect_name in self.effects:
+            return self.effects[effect_name](wave, **kwargs)
+        return wave
+
+    def reverb(self, wave, decay=0.5):
+        reverb_wave = np.convolve(wave, np.exp(-np.arange(len(wave)) * decay), mode='same')
+        return reverb_wave / np.max(np.abs(reverb_wave))
+
+    def delay(self, wave, delay_time=0.2, sample_rate=44100):
+        delay_samples = int(delay_time * sample_rate)
+        delayed_wave = np.zeros(len(wave) + delay_samples)
+        delayed_wave[:len(wave)] = wave
+        delayed_wave[delay_samples:] += wave
+        return delayed_wave[:len(wave)]
+
+    def distortion(self, wave, threshold=0.5):
+        wave = np.clip(wave, -threshold, threshold)
+        return wave / np.max(np.abs(wave))
+
+
+# Main App UI
+class DiverAppUI(App):
+    def build(self):
+        self.synth = WavetableSynth()
+        self.effects = EffectsLibrary()
+
+        main_layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+        display = VolumetricDisplay(self.synth)
+        main_layout.add_widget(display)
+
+        # Controls for Wave Type
+        wave_type_layout = BoxLayout(size_hint=(1, 0.2))
+        wave_type_layout.add_widget(Label(text="Wave Type"))
+        for wave_type in ["sine", "saw", "square"]:
+            btn = ToggleButton(text=wave_type.capitalize())
+            btn.bind(on_press=lambda instance, wt=wave_type: self.synth.set_wave_type(wt))
+            wave_type_layout.add_widget(btn)
+        main_layout.add_widget(wave_type_layout)
+
+        # Frequency Control
+        freq_layout = BoxLayout(size_hint=(1, 0.2))
+        freq_label = Label(text="Frequency: 440 Hz")
+        freq_slider = Slider(min=20, max=2000, value=440)
+        freq_slider.bind(value=lambda instance, val: (self.synth.set_frequency(val), setattr(freq_label, 'text', f"Frequency: {int(val)} Hz")))
+        freq_layout.add_widget(freq_label)
+        freq_layout.add_widget(freq_slider)
+        main_layout.add_widget(freq_layout)
+
+        # Effects Control
+        effects_layout = BoxLayout(size_hint=(1, 0.2))
+        effects_layout.add_widget(Label(text="Effects"))
+        for effect in self.effects.effects.keys():
+            btn = Button(text=effect.capitalize())
+            btn.bind(on_press=lambda instance, eff=effect: self.apply_effect(eff))
+            effects_layout.add_widget(btn)
+        main_layout.add_widget(effects_layout)
+
+        return main_layout
+
+    def apply_effect(self, effect_name):
+        wave = self.synth.generate_wave(1.0)
+        processed_wave = self.effects.apply_effect(wave, effect_name)
+        self.synth.wave = processed_wave
+
+
+# Run Diver
+if __name__ == "__main__":
+    DiverAppUI().run()
+
+
+Updated ai:
+
+import os
+import json
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.popup import Popup
+
+# Helper functions for the app
+def load_dictionary(file_path="dictionary.json"):
+    """Load the Funk & Wagnalls Dictionary into memory."""
+    if os.path.exists(file_path):
+        with open(file_path, "r") as file:
+            return json.load(file)
+    return {}
+
+def search_dictionary(term, dictionary):
+    """Search the dictionary for a term."""
+    term = term.lower()
+    return dictionary.get(term, "No definition found.")
+
+# Core App Functionality
+class EchoDawnAI(BoxLayout):
+    def __init__(self, **kwargs):
+        super().__init__(orientation="vertical", **kwargs)
+
+        # Load the dictionary for offline mode
+        self.dictionary = load_dictionary()
+
+        # Instruction Label
+        self.instructions = Label(
+            text="Welcome to Echo Dawn AI\nEnter a query or activate Learning Mode for hints.",
+            size_hint=(1, 0.2),
+            halign="center"
+        )
+        self.add_widget(self.instructions)
+
+        # Input Field
+        self.input_field = TextInput(
+            hint_text="Type your query here...",
+            size_hint=(1, 0.1),
+            multiline=False
+        )
+        self.add_widget(self.input_field)
+
+        # Buttons Layout
+        self.buttons_layout = BoxLayout(size_hint=(1, 0.2))
+
+        # Search Button
+        self.search_button = Button(text="Search", size_hint=(0.5, 1))
+        self.search_button.bind(on_press=self.on_search)
+        self.buttons_layout.add_widget(self.s
